@@ -1,40 +1,44 @@
 package com.example.crudspring.service;
 
-import com.example.crudspring.dao.EmployeeDAO;
+import com.example.crudspring.dao.EmployeeRepository;
 import com.example.crudspring.entity.Employee;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class EmployeeServiceImpl implements EmployeeService {
 
-  private final EmployeeDAO employeeDAO;
+  private final EmployeeRepository employeeRepository;
 
-  public EmployeeServiceImpl(EmployeeDAO theEmployeeDAO) {
-    employeeDAO = theEmployeeDAO;
+  public EmployeeServiceImpl(EmployeeRepository theEmployeeRepository) {
+    employeeRepository = theEmployeeRepository;
   }
 
   @Override
   public List<Employee> findAll() {
-    return employeeDAO.findAll();
+    return employeeRepository.findAll();
   }
 
   @Override
   public Employee findById(int theId) {
-    return employeeDAO.findById(theId);
+    Optional<Employee> optionalEmployee = employeeRepository.findById(theId);
+
+    if (!optionalEmployee.isPresent()) {
+      throw new RuntimeException("Did not find employee id - " + theId);
+    }
+
+    return optionalEmployee.get();
   }
 
-  @Transactional
   @Override
   public Employee save(Employee theEmployee) {
-    return employeeDAO.save(theEmployee);
+    return employeeRepository.save(theEmployee);
   }
 
-  @Transactional
   @Override
   public void deleteById(int theId) {
-    employeeDAO.deleteById(theId);
+    employeeRepository.deleteById(theId);
   }
 }
